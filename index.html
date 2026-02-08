@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi San Valentín</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: #5c3a44;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 90%;
+            width: 600px;
+            transition: all 0.5s ease;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: #d63384;
+            margin-bottom: 1rem;
+        }
+
+        /* --- PANTALLA 1: CUENTA ATRÁS --- */
+        #countdown-screen {
+            display: block;
+        }
+
+        .timer {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #d63384;
+        }
+
+        /* --- PANTALLA 2: PIN --- */
+        #pin-screen {
+            display: none;
+        }
+
+        input[type="password"] {
+            padding: 10px;
+            font-size: 1.2rem;
+            border: 2px solid #ff9a9e;
+            border-radius: 10px;
+            text-align: center;
+            width: 150px;
+            outline: none;
+            color: #d63384;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #d63384;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background-color: #c21b68;
+        }
+
+        .error-msg {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            height: 20px;
+        }
+
+        /* --- PANTALLA 3: CARTA --- */
+        #letter-screen {
+            display: none;
+            animation: fadeIn 2s;
+        }
+
+        .letter-content {
+            display: flex;
+            flex-direction: row; /* Horizontal */
+            align-items: center;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .text-area {
+            flex: 2;
+        }
+
+        .qr-area {
+            flex: 1;
+            text-align: center;
+        }
+
+        .qr-area img {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            border: 2px dashed #d63384;
+        }
+
+        /* --- ANIMACIÓN FLORES/PÉTALOS --- */
+        .petal {
+            position: absolute;
+            top: -10px;
+            background-color: #ff6b6b;
+            border-radius: 150% 0 150% 0;
+            animation: fall linear infinite;
+            z-index: 999;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsivo para móviles */
+        @media (max-width: 600px) {
+            .letter-content {
+                flex-direction: column; /* En móvil se pone vertical */
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="countdown-screen" class="container">
+        <h1>San Valentín se acerca...</h1>
+        <p>El regalo se desbloqueará el 14 de Febrero a las 9:00 AM</p>
+        <div class="timer" id="timer">00d 00h 00m 00s</div>
+    </div>
+
+    <div id="pin-screen" class="container">
+        <h1>¡Es hoy!</h1>
+        <p>Para ver tu regalo, introduce la fecha de nuestro aniversario (DDMMAA)</p>
+        <input type="password" id="pinInput" placeholder="******" maxlength="6">
+        <br>
+        <button onclick="checkPin()">Desbloquear</button>
+        <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <div id="letter-screen" class="container">
+        <h1>¡Feliz San Valentín! ❤️</h1>
+        <div class="letter-content">
+            <div class="text-area">
+                <p>
+                    Hola mi amor,<br><br>
+                    No sabía cómo expresar todo lo que siento, así que he creado esto para ti. 
+                    Gracias por cada momento desde aquel 28 de enero. Eres lo mejor que me ha pasado.
+                    <br><br>
+                    Escanea el código de la derecha para escuchar "nuestra canción".
+                    <br><br>
+                    Te quiero infinito.
+                </p>
+            </div>
+            <div class="qr-area">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=spotify:track:4cOdK2wGLETKBW3PvgPWqT" alt="Spotify Code">
+                <p style="font-size: 0.8rem; margin-top:5px;">Escúchame 🎵</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN
+        // Fecha objetivo: 14 de Febrero de 2026, 9:00 AM
+        const targetDate = new Date(2025, 1, 14, 9, 0, 0).getTime(); 
+        const correctPin = "280124";
+
+        // LOGICA CUENTA ATRÁS
+        const timerElement = document.getElementById("timer");
+        const countdownScreen = document.getElementById("countdown-screen");
+        const pinScreen = document.getElementById("pin-screen");
+
+        const timerInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            // Si ya pasó la fecha
+            if (distance < 0) {
+                clearInterval(timerInterval);
+                countdownScreen.style.display = "none";
+                pinScreen.style.display = "block";
+                return;
+            }
+
+            // Cálculos de tiempo
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            timerElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }, 1000);
+
+        // LOGICA DEL PIN
+        function checkPin() {
+            const input = document.getElementById("pinInput").value;
+            const errorMsg = document.getElementById("errorMsg");
+
+            if (input === correctPin) {
+                document.getElementById("pin-screen").style.display = "none";
+                document.getElementById("letter-screen").style.display = "block";
+                createPetals(); // Iniciar animación
+            } else {
+                errorMsg.textContent = "Fecha incorrecta, intenta recordar nuestro día...";
+                // Efecto de vibración
+                const box = document.querySelector("#pin-screen");
+                box.style.transform = "translateX(10px)";
+                setTimeout(() => box.style.transform = "translateX(0)", 100);
+                setTimeout(() => box.style.transform = "translateX(-10px)", 200);
+                setTimeout(() => box.style.transform = "translateX(0)", 300);
+            }
+        }
+
+        // ANIMACIÓN DE PÉTALOS
+        function createPetals() {
+            const colors = ['#ff6b6b', '#ff9a9e', '#d63384'];
+            setInterval(() => {
+                const petal = document.createElement('div');
+                petal.classList.add('petal');
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.animationDuration = Math.random() * 3 + 2 + 's';
+                petal.style.width = Math.random() * 15 + 10 + 'px';
+                petal.style.height = petal.style.width;
+                petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                document.body.appendChild(petal);
+
+                setTimeout(() => {
+                    petal.remove();
+                }, 5000);
+            }, 300);
+        }
+    </script>
+</body>
+</html>
