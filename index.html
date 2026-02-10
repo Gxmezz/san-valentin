@@ -2,262 +2,512 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Para mi San Valentín</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTILOS GENERALES --- */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Nunito', sans-serif;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            color: #5c3a44;
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;700&display=swap');
+
+        :root {
+            --primary: #ff4d6d;
+            --bg: #fff0f3;
+            --text: #590d22;
         }
 
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg);
+            font-family: 'Quicksand', sans-serif;
+            touch-action: none; /* Prevenir zoom en móvil */
+        }
+
+        /* Contenedor central */
         .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 90%;
-            width: 600px;
-            transition: all 0.5s ease;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: opacity 1s;
         }
 
         h1 {
-            font-family: 'Dancing Script', cursive;
+            font-family: 'Pacifico', cursive;
+            color: var(--primary);
             font-size: 2.5rem;
-            color: #d63384;
-            margin-bottom: 1rem;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        /* --- PANTALLA 1: CUENTA ATRÁS --- */
+        p {
+            color: var(--text);
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        /* Pantalla Cuenta Atrás */
         #countdown-screen {
-            display: block;
+            display: flex;
         }
 
-        .timer {
-            font-size: 2rem;
+        .timer-box {
+            font-size: 1.5rem;
             font-weight: bold;
-            margin: 20px 0;
-            color: #d63384;
+            color: var(--text);
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.2);
         }
 
-        /* --- PANTALLA 2: PIN --- */
+        /* Pantalla PIN */
         #pin-screen {
             display: none;
         }
 
-        input[type="password"] {
-            padding: 10px;
-            font-size: 1.2rem;
-            border: 2px solid #ff9a9e;
-            border-radius: 10px;
+        input[type="tel"] { /* type tel para teclado numérico en móvil */
+            padding: 15px;
+            font-size: 1.5rem;
             text-align: center;
-            width: 150px;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            width: 200px;
             outline: none;
-            color: #d63384;
-        }
-
-        button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #d63384;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        button:hover {
-            transform: scale(1.05);
-            background-color: #c21b68;
+            color: var(--text);
+            letter-spacing: 5px;
         }
 
         .error-msg {
             color: red;
-            font-size: 0.9rem;
             margin-top: 10px;
             height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        /* --- PANTALLA 3: CARTA --- */
-        #letter-screen {
+        /* Pantalla Final (Botón Corazón) */
+        #reveal-screen {
             display: none;
-            animation: fadeIn 2s;
         }
 
-        .letter-content {
-            display: flex;
-            flex-direction: row; /* Horizontal */
-            align-items: center;
-            gap: 20px;
-            text-align: left;
+        .heart-btn {
+            font-size: 4rem;
+            cursor: pointer;
+            animation: beat 1s infinite alternate;
+            user-select: none;
+            transition: transform 0.3s;
+        }
+        
+        .heart-text {
+            font-family: 'Pacifico', cursive;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-top: 20px;
         }
 
-        .text-area {
-            flex: 2;
+        @keyframes beat {
+            to { transform: scale(1.1); }
         }
 
-        .qr-area {
-            flex: 1;
-            text-align: center;
-        }
-
-        .qr-area img {
-            width: 150px;
-            height: 150px;
-            border-radius: 10px;
-            border: 2px dashed #d63384;
-        }
-
-        /* --- ANIMACIÓN FLORES/PÉTALOS --- */
-        .petal {
+        /* Canvas para la animación */
+        canvas {
             position: absolute;
-            top: -10px;
-            background-color: #ff6b6b;
-            border-radius: 150% 0 150% 0;
-            animation: fall linear infinite;
-            z-index: 999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; /* Detrás del UI inicialmente */
+            pointer-events: none;
         }
 
-        @keyframes fall {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsivo para móviles */
-        @media (max-width: 600px) {
-            .letter-content {
-                flex-direction: column; /* En móvil se pone vertical */
-                text-align: center;
-            }
-        }
     </style>
 </head>
 <body>
 
+    <canvas id="world"></canvas>
+
     <div id="countdown-screen" class="container">
-        <h1>San Valentín se acerca...</h1>
-        <p>El regalo se desbloqueará el 14 de Febrero a las 9:00 AM</p>
-        <div class="timer" id="timer">00d 00h 00m 00s</div>
+        <h1>San Valentín se acerca</h1>
+        <div class="timer-box" id="timer">Cargando...</div>
+        <p style="margin-top: 20px; font-size: 0.9rem;">Disponible el 14 de Febrero a las 9:00 AM</p>
     </div>
 
     <div id="pin-screen" class="container">
-        <h1>¡Es hoy!</h1>
-        <p>Para ver tu regalo, introduce la fecha de nuestro aniversario (DDMMAA)</p>
-        <input type="password" id="pinInput" placeholder="******" maxlength="6">
-        <br>
-        <button onclick="checkPin()">Desbloquear</button>
-        <div class="error-msg" id="errorMsg"></div>
+        <h1>Nuestro Aniversario</h1>
+        <p>Introduce la fecha (DDMMAA)</p>
+        <input type="tel" id="pin-input" maxlength="6" placeholder="******">
+        <div class="error-msg" id="pin-error">Fecha incorrecta, inténtalo de nuevo amor.</div>
     </div>
 
-    <div id="letter-screen" class="container">
-        <h1>¡Feliz San Valentín! ❤️</h1>
-        <div class="letter-content">
-            <div class="text-area">
-                <p>
-                    Hola mi amor,<br><br>
-                    No sabía cómo expresar todo lo que siento, así que he creado esto para ti. 
-                    Gracias por cada momento desde aquel 28 de enero. Eres lo mejor que me ha pasado.
-                    <br><br>
-                    Escanea el código de la derecha para escuchar "nuestra canción".
-                    <br><br>
-                    Te quiero infinito.
-                </p>
-            </div>
-            <div class="qr-area">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=spotify:track:4cOdK2wGLETKBW3PvgPWqT" alt="Spotify Code">
-                <p style="font-size: 0.8rem; margin-top:5px;">Escúchame 🎵</p>
-            </div>
-        </div>
+    <div id="reveal-screen" class="container">
+        <div class="heart-btn" id="start-btn">❤️</div>
+        <div class="heart-text">¡Feliz San Valentín!</div>
+        <p style="font-size: 0.8rem; margin-top: 30px; opacity: 0.6;">(Toca el corazón)</p>
     </div>
 
-    <script>
-        // CONFIGURACIÓN
-        // Fecha objetivo: 14 de Febrero de 2026, 9:00 AM
-        const targetDate = new Date(2025, 1, 14, 9, 0, 0).getTime(); 
-        const correctPin = "280124";
+<script>
+    // ================= CONFIGURACIÓN =================
+    // CAMBIA ESTO A TRUE PARA PROBARLO YA MISMO
+    const testingMode = false; 
+    
+    // Configuración de Fechas
+    const targetDate = new Date('2026-02-14T09:00:00'); // Año ajustado al actual o siguiente
+    const correctPin = "280124";
 
-        // LOGICA CUENTA ATRÁS
-        const timerElement = document.getElementById("timer");
-        const countdownScreen = document.getElementById("countdown-screen");
-        const pinScreen = document.getElementById("pin-screen");
+    // Elementos del DOM
+    const screens = {
+        countdown: document.getElementById('countdown-screen'),
+        pin: document.getElementById('pin-screen'),
+        reveal: document.getElementById('reveal-screen')
+    };
+    const timerEl = document.getElementById('timer');
+    const pinInput = document.getElementById('pin-input');
+    const pinError = document.getElementById('pin-error');
+    const startBtn = document.getElementById('start-btn');
+    const canvas = document.getElementById('world');
+    const ctx = canvas.getContext('2d');
 
-        const timerInterval = setInterval(() => {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
+    // Estado del sistema
+    let currentState = 'COUNTDOWN'; // COUNTDOWN, PIN, REVEAL, ANIMATION
 
-            // Si ya pasó la fecha
-            if (distance < 0) {
-                clearInterval(timerInterval);
-                countdownScreen.style.display = "none";
-                pinScreen.style.display = "block";
-                return;
-            }
+    // ================= LÓGICA DE FLUJO =================
 
-            // Cálculos de tiempo
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    function init() {
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        checkTime();
+        setInterval(checkTime, 1000);
+    }
 
-            timerElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }, 1000);
+    function checkTime() {
+        if (currentState !== 'COUNTDOWN') return;
 
-        // LOGICA DEL PIN
-        function checkPin() {
-            const input = document.getElementById("pinInput").value;
-            const errorMsg = document.getElementById("errorMsg");
+        const now = new Date();
+        const diff = targetDate - now;
 
-            if (input === correctPin) {
-                document.getElementById("pin-screen").style.display = "none";
-                document.getElementById("letter-screen").style.display = "block";
-                createPetals(); // Iniciar animación
+        if (diff <= 0 || testingMode) {
+            transitionToPin();
+        } else {
+            // Formato de cuenta atrás
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            timerEl.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+    }
+
+    function transitionToPin() {
+        currentState = 'PIN';
+        screens.countdown.style.display = 'none';
+        screens.pin.style.display = 'flex';
+        pinInput.focus();
+    }
+
+    pinInput.addEventListener('input', (e) => {
+        if (e.target.value.length === 6) {
+            if (e.target.value === correctPin) {
+                transitionToReveal();
             } else {
-                errorMsg.textContent = "Fecha incorrecta, intenta recordar nuestro día...";
-                // Efecto de vibración
-                const box = document.querySelector("#pin-screen");
-                box.style.transform = "translateX(10px)";
-                setTimeout(() => box.style.transform = "translateX(0)", 100);
-                setTimeout(() => box.style.transform = "translateX(-10px)", 200);
-                setTimeout(() => box.style.transform = "translateX(0)", 300);
+                pinError.style.opacity = 1;
+                pinInput.value = '';
+                setTimeout(() => pinError.style.opacity = 0, 2000);
+            }
+        }
+    });
+
+    function transitionToReveal() {
+        currentState = 'REVEAL';
+        screens.pin.style.display = 'none';
+        screens.reveal.style.display = 'flex';
+    }
+
+    startBtn.addEventListener('click', () => {
+        screens.reveal.classList.add('hidden'); // Desvanecer UI
+        startAnimationSequence();
+    });
+
+    // ================= ANIMACIÓN (CANVAS) =================
+    
+    let width, height;
+    function resizeCanvas() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    }
+
+    // Objetos de la animación
+    const config = {
+        floorY: 0,
+        seedColor: '#ff0000',
+        treeColor: '#5c3a3a',
+    };
+
+    let animationState = 'IDLE'; // DROPPING, IMPACT, GROWING
+    let seed = { x: 0, y: 0, r: 10, vy: 0 };
+    let lineProgress = 0;
+    let tree;
+    let leaves = [];
+
+    function startAnimationSequence() {
+        // Configurar inicio
+        config.floorY = height - 100;
+        seed.x = width / 2;
+        seed.y = height / 2 - 100; // Empieza donde estaba el botón aprox
+        seed.vy = 2; // Velocidad inicial
+        
+        animationState = 'DROPPING';
+        loop();
+    }
+
+    function loop() {
+        ctx.clearRect(0, 0, width, height);
+
+        if (animationState === 'DROPPING') {
+            updateDrop();
+            drawDrop();
+        } else if (animationState === 'IMPACT') {
+            updateLine();
+            drawLine();
+            drawDrop(); // El punto se queda en el suelo
+        } else if (animationState === 'GROWING') {
+            drawLine(); // La línea se queda
+            if(tree) tree.update();
+            if(tree) tree.draw();
+            
+            // Gestionar hojas cayendo
+            updateLeaves();
+        }
+
+        requestAnimationFrame(loop);
+    }
+
+    // 1. Caída del punto
+    function updateDrop() {
+        seed.vy += 0.5; // Gravedad
+        seed.y += seed.vy;
+
+        // Choque con el suelo
+        if (seed.y >= config.floorY) {
+            seed.y = config.floorY;
+            seed.vy = 0;
+            animationState = 'IMPACT';
+        }
+    }
+
+    function drawDrop() {
+        ctx.beginPath();
+        ctx.arc(seed.x, seed.y, seed.r, 0, Math.PI * 2);
+        ctx.fillStyle = config.seedColor;
+        ctx.fill();
+    }
+
+    // 2. Línea dibujándose
+    function updateLine() {
+        lineProgress += 15; // Velocidad de dibujo de línea
+        if (lineProgress >= width / 2) {
+            lineProgress = width / 2;
+            // Iniciar árbol
+            animationState = 'GROWING';
+            initTree();
+        }
+    }
+
+    function drawLine() {
+        ctx.beginPath();
+        ctx.moveTo(seed.x - lineProgress, config.floorY);
+        ctx.lineTo(seed.x + lineProgress, config.floorY);
+        ctx.strokeStyle = '#590d22';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+    }
+
+    // 3. Árbol Fractal
+    function initTree() {
+        tree = new Tree(seed.x, config.floorY);
+    }
+
+    class Tree {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.branches = [];
+            this.addBranch(x, y, -Math.PI / 2, height / 3.5, 10); // Tronco principal
+        }
+
+        addBranch(x, y, angle, len, thickness) {
+            this.branches.push(new Branch(x, y, angle, len, thickness));
+        }
+
+        update() {
+            let finished = true;
+            this.branches.forEach(b => {
+                if (!b.finished) finished = false;
+                b.update(this);
+            });
+        }
+
+        draw() {
+            this.branches.forEach(b => b.draw());
+        }
+    }
+
+    class Branch {
+        constructor(x, y, angle, len, thickness) {
+            this.x = x;
+            this.y = y;
+            this.angle = angle;
+            this.targetLen = len;
+            this.thickness = thickness;
+            this.currentLen = 0;
+            this.finished = false;
+            this.childSpawned = false;
+        }
+
+        update(tree) {
+            if (this.currentLen < this.targetLen) {
+                this.currentLen += 2; // Velocidad de crecimiento
+            } else {
+                this.finished = true;
+                if (!this.childSpawned && this.thickness > 1) {
+                    this.childSpawned = true;
+                    // Crear ramas hijas
+                    // Hacemos que la forma general tienda a curvarse hacia dentro para simular corazón
+                    let numBranches = 2;
+                    let spread = 0.5 + Math.random() * 0.3;
+                    
+                    for (let i = 0; i < numBranches; i++) {
+                        let newAngle = this.angle + (i === 0 ? -spread : spread);
+                        let newLen = this.targetLen * 0.75;
+                        let newThickness = this.thickness * 0.7;
+                        
+                        let endX = this.x + Math.cos(this.angle) * this.targetLen;
+                        let endY = this.y + Math.sin(this.angle) * this.targetLen;
+                        
+                        tree.addBranch(endX, endY, newAngle, newLen, newThickness);
+                    }
+                } else if (this.thickness <= 1 && Math.random() < 0.1) {
+                    // Generar hoja (corazón) al final
+                    let endX = this.x + Math.cos(this.angle) * this.targetLen;
+                    let endY = this.y + Math.sin(this.angle) * this.targetLen;
+                    spawnLeaf(endX, endY);
+                }
             }
         }
 
-        // ANIMACIÓN DE PÉTALOS
-        function createPetals() {
-            const colors = ['#ff6b6b', '#ff9a9e', '#d63384'];
-            setInterval(() => {
-                const petal = document.createElement('div');
-                petal.classList.add('petal');
-                petal.style.left = Math.random() * 100 + 'vw';
-                petal.style.animationDuration = Math.random() * 3 + 2 + 's';
-                petal.style.width = Math.random() * 15 + 10 + 'px';
-                petal.style.height = petal.style.width;
-                petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                document.body.appendChild(petal);
-
-                setTimeout(() => {
-                    petal.remove();
-                }, 5000);
-            }, 300);
+        draw() {
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y);
+            let endX = this.x + Math.cos(this.angle) * this.currentLen;
+            let endY = this.y + Math.sin(this.angle) * this.currentLen;
+            ctx.lineTo(endX, endY);
+            ctx.strokeStyle = config.treeColor;
+            ctx.lineWidth = this.thickness;
+            ctx.lineCap = 'round';
+            ctx.stroke();
         }
-    </script>
+    }
+
+    // 4. Hojas (Corazones)
+    function spawnLeaf(x, y) {
+        // Colores rosa/rojo aleatorios
+        const colors = ['#ff4d6d', '#ff758f', '#c9184a', '#ffb3c1', '#a4133c'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        leaves.push(new Leaf(x, y, color));
+    }
+
+    class Leaf {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.size = 0;
+            this.targetSize = 5 + Math.random() * 8;
+            this.growing = true;
+            
+            // Físicas de caída
+            this.falling = false;
+            this.vy = 0;
+            this.vx = 0;
+            this.oscillation = Math.random() * Math.PI * 2;
+        }
+
+        update() {
+            // Crecimiento
+            if (this.growing) {
+                if (this.size < this.targetSize) {
+                    this.size += 0.2;
+                } else {
+                    this.growing = false;
+                    // Probabilidad de caerse
+                    if (Math.random() < 0.001) this.falling = true;
+                }
+            }
+
+            // Animación de movimiento en el árbol (viento)
+            if (!this.falling) {
+                this.oscillation += 0.05;
+            } 
+            // Caída
+            else {
+                this.y += 1.5; // Caída lenta
+                this.x += Math.sin(this.y * 0.05) * 0.5; // Vaivén
+                
+                // Si sale de pantalla, resetear o borrar (aquí simplificamos borrando visualmente si sale muy abajo)
+                if(this.y > height) this.y = height + 10;
+            }
+        }
+
+        draw() {
+            let swayX = this.falling ? 0 : Math.sin(this.oscillation) * 2;
+            
+            ctx.save();
+            ctx.translate(this.x + swayX, this.y);
+            
+            // Dibujar corazón
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            let s = this.size;
+            // Fórmula simple de corazón
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-s/2, -s/2, -s, s/3, 0, s);
+            ctx.bezierCurveTo(s, s/3, s/2, -s/2, 0, 0);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+    }
+
+    function updateLeaves() {
+        leaves.forEach(leaf => {
+            leaf.update();
+            leaf.draw();
+        });
+        
+        // Seguir generando hojas cayendo aleatoriamente de las existentes
+        if(leaves.length > 0 && Math.random() < 0.05) {
+            let randomLeaf = leaves[Math.floor(Math.random() * leaves.length)];
+            if(!randomLeaf.falling && !randomLeaf.growing) {
+                randomLeaf.falling = true;
+            }
+        }
+    }
+
+    // Arrancar sistema
+    init();
+
+</script>
 </body>
 </html>
